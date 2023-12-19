@@ -6,6 +6,6 @@ workout plan and meal plan which will be created by OpenAI and saved to your acc
 In addition to this you will be able to log your Macros by simply clicking 
 the corresponding button for what macro you want to add.
 
-## Technologies
+## Technology used
 
-I am doing this project in C#/.NET in order to get better at the technology.
+I am doing this project in C#/.NET in order to improve my skills.
