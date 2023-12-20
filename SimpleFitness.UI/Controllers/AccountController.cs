@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using SimpleFitness.Backend.Models;
 using SimpleFitness.UI.Models;
 using System.Linq;
 using System.Threading.Tasks;
@@ -126,7 +127,7 @@ namespace SimpleFitness.UI.Controllers {
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model) {
             if (ModelState.IsValid) {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new User { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded) {
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
@@ -315,7 +316,7 @@ namespace SimpleFitness.UI.Controllers {
                 if (info == null) {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new User { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded) {
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);

@@ -5,14 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SimpleFitness.Backend.Models {
-    public class Macros : BaseModel {
+    public class DailyMacroTracker : BaseModel {
         public DateTime Day { get; set; }
         public int Protein { get; set; }
         public int Fat { get; set; }
         public int Carbs { get; set; }
         public int TotalCalories { get; set; }
 
-        public Macros() { 
+        public DailyMacroTracker() { 
             Day = DateTime.Now;
         }
         
