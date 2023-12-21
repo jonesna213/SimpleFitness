@@ -85,6 +85,10 @@
     <Compile Include="Migrations\202312200110059_Initial.designer.cs">
       <DependentUpon>202312200110059_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202312210214453_AddedMacroTracker.cs" />
+    <Compile Include="Migrations\202312210214453_AddedMacroTracker.designer.cs">
+      <DependentUpon>202312210214453_AddedMacroTracker.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\DailyMacroTracker.cs" />
@@ -104,6 +108,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202312200110059_Initial.resx">
       <DependentUpon>202312200110059_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202312210214453_AddedMacroTracker.resx">
+      <DependentUpon>202312210214453_AddedMacroTracker.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

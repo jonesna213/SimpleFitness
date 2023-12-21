@@ -13,7 +13,7 @@ namespace SimpleFitness.Backend.Models {
         public int TotalCalories { get; set; }
 
         public DailyMacroTracker() { 
-            Day = DateTime.Now;
+            Day = DateTime.Now.Date;
         }
         
         //Updates the TotalCalories to an updated value from the macros

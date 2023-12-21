@@ -1,18 +1,21 @@
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin.Security;
+using SimpleFitness.Backend.Database;
+using SimpleFitness.Backend.Models;
 using System;
-
+using System.Data.Entity;
+using System.Web;
 using Unity;
 
-namespace SimpleFitness.UI
-{
+namespace SimpleFitness.UI {
     /// <summary>
     /// Specifies the Unity configuration for the main container.
     /// </summary>
-    public static class UnityConfig
-    {
+    public static class UnityConfig {
         #region Unity Container
         private static Lazy<IUnityContainer> container =
-          new Lazy<IUnityContainer>(() =>
-          {
+          new Lazy<IUnityContainer>(() => {
               var container = new UnityContainer();
               RegisterTypes(container);
               return container;
@@ -34,14 +37,18 @@ namespace SimpleFitness.UI
         /// allows resolving a concrete type even if it was not previously
         /// registered.
         /// </remarks>
-        public static void RegisterTypes(IUnityContainer container)
-        {
+        public static void RegisterTypes(IUnityContainer container) {
             // NOTE: To load from web.config uncomment the line below.
             // Make sure to add a Unity.Configuration to the using statements.
             // container.LoadConfiguration();
 
             // TODO: Register your type's mappings here.
             // container.RegisterType<IProductRepository, ProductRepository>();
+
+            container.RegisterType<DbContext, DBContext>();
+            container.RegisterType<IUserStore<User>, UserStore<User>>();
+
+            container.RegisterFactory<IAuthenticationManager>(c => HttpContext.Current.GetOwinContext().Authentication);
         }
     }
 }
