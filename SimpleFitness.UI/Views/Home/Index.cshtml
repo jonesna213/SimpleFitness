@@ -1,19 +1,12 @@
-﻿@{
+﻿@using SimpleFitness.Backend.Models
+@model DailyMacroTracker
+@{
     ViewBag.Title = "Home Page";
 }
 <main>
     @if (Request.IsAuthenticated) {
-        <h1>Macro Tracker</h1>
         <section>
-            <div>
-                Fats
-            </div>
-            <div>
-                Carbohydrates
-            </div>
-            <div>
-                Proteins
-            </div>
+            @Html.Partial("../Profile/MacroTracker")
         </section>
     } else {
 

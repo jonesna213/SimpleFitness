@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
+using SimpleFitness.Backend.Database;
 using SimpleFitness.Backend.Models;
-using SimpleFitness.UI.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -18,7 +20,7 @@ namespace SimpleFitness.UI.Controllers {
         public ProfileController() {
         }
 
-        public ProfileController(ApplicationUserManager userManager, ApplicationSignInManager signInManager) {
+        public ProfileController(ApplicationUserManager userManager) {
             UserManager = userManager;
         }
 
@@ -42,7 +44,7 @@ namespace SimpleFitness.UI.Controllers {
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateProfile(User model) {
             if (ModelState.IsValid) {
-                var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+                var user = await GetUser();
 
                 user.Age = model.Age;
                 user.Gender = model.Gender;
@@ -64,7 +66,7 @@ namespace SimpleFitness.UI.Controllers {
 
         //GET : /Profile/
         public async Task<ActionResult> Index() {
-            User user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+            User user = await GetUser();
             return View(user);
         }
 
@@ -72,7 +74,7 @@ namespace SimpleFitness.UI.Controllers {
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Index(User model) {
             if (ModelState.IsValid) {
-                var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+                User user = await GetUser();
 
                 user.Age = model.Age;
                 user.Gender = model.Gender;
@@ -95,27 +97,44 @@ namespace SimpleFitness.UI.Controllers {
 
 
         public async Task<ActionResult> MacroTracker() {
-            User user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
-            List<DailyMacroTracker> trackers = user.MacroTrackers.ToList();
-            if (trackers.Count > 0) {
-                DateTime currentDate = DateTime.Now.Date;
-                trackers.FirstOrDefault(t => {
-                    if (currentDate == t.Day) {
-                        return true;
-                    }
+            User user = await GetUser();
+            DBContext dBContext = new DBContext();
+            DBAccess<DailyMacroTracker> access = new DBAccess<DailyMacroTracker>(dBContext);  
 
-                    return false;
-                });
+            List<DailyMacroTracker> trackers = access.Collection().ToList();
+
+            DateTime currentDate = DateTime.Now.Date;
+            DailyMacroTracker tracker = trackers.FirstOrDefault(t => currentDate == t.Day);
+
+            if (tracker == null) {
+
+                //For some reason i needed to make an empty list to where i then insert it into the database.
+                //Not sure why its that way, but it works.
+                DailyMacroTracker newTracker = new DailyMacroTracker();
+
+                List<DailyMacroTracker> newTrackers = new List<DailyMacroTracker> { newTracker };
+
+                user.MacroTrackers = newTrackers;
+
+                var result = await _userManager.UpdateAsync(user);
+
+                if (result.Succeeded) {
+                    return View(newTracker);
+                }
+
+                AddErrors(result);
             }
 
-            return View();
+            return View(tracker);
         }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult MacroTracker(DailyMacroTracker tracker) {
             if (ModelState.IsValid) {
-                
+
             }
 
             return View(tracker);
@@ -124,11 +143,16 @@ namespace SimpleFitness.UI.Controllers {
 
 
 
-        //Helper function
+        //Helper functions
         private void AddErrors(IdentityResult result) {
             foreach (var error in result.Errors) {
                 ModelState.AddModelError("", error);
             }
+        }
+
+        private async Task<User> GetUser() {
+            User user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+            return user;
         }
     }
 }

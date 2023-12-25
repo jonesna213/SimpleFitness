@@ -13,6 +13,7 @@ namespace SimpleFitness.Backend.Database {
         //Add which models that you want in tables like below
         //public DbSet<Product> Products { get; set; }
 
+        public DbSet<DailyMacroTracker> Trackers { get; set; }
 
         public DBContext() : base("DefaultConnection", throwIfV1Schema: false) {
 

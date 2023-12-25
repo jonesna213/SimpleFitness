@@ -1,0 +1,43 @@
+﻿@model SimpleFitness.Backend.Models.DailyMacroTracker
+@{
+    ViewBag.Title = "Macro Tracker";
+}
+
+<div>
+    <h4>Macro Tracker</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Protein)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Protein)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fat)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fat)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Carbs)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Carbs)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TotalCalories)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TotalCalories)
+        </dd>
+
+    </dl>
+</div>

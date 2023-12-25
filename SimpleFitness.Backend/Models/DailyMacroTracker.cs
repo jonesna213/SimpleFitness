@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,8 +13,14 @@ namespace SimpleFitness.Backend.Models {
         public int Carbs { get; set; }
         public int TotalCalories { get; set; }
 
+        //public string User_Id { get; set; }
+
         public DailyMacroTracker() { 
-            Day = DateTime.Now.Date;
+            this.Day = DateTime.Now.Date;
+            this.Protein = 0;
+            this.Fat = 0;
+            this.Carbs = 0;
+            this.TotalCalories = 0;
         }
         
         //Updates the TotalCalories to an updated value from the macros
