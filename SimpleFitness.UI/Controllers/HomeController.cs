@@ -7,7 +7,11 @@ using System.Web.Mvc;
 namespace SimpleFitness.UI.Controllers {
     public class HomeController : Controller {
         public ActionResult Index() {
-            return View();
+            if (User.Identity.IsAuthenticated) {
+                return RedirectToAction("MacroTracker", "Profile");
+            } else {
+                return View();
+            }
         }
 
         public ActionResult About() {
