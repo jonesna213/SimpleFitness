@@ -265,6 +265,7 @@
     <Content Include="Views\Profile\CreateProfile.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Profile\MacroTracker.cshtml" />
+    <Content Include="Views\Profile\MealPlan.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

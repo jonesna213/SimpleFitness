@@ -12,5 +12,9 @@ namespace SimpleFitness.Backend.Food.Models {
         public int Carbs { get; set; }
         public int Calories { get; set; }
         public string FoodDescription { get; set; }
+
+        public void UpdateCalories() {
+            this.Calories = (Carbs * 4) + (Protein * 4) + (Fat * 9);
+        }
     }
 }

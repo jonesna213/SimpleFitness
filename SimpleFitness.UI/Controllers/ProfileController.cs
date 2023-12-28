@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using SimpleFitness.Backend.Database;
+using SimpleFitness.Backend.Food.Models;
 using SimpleFitness.Backend.Models;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace SimpleFitness.UI.Controllers {
         }
 
 
-        // Get: /Account/CreateProfile
+        // Get: /Profile/CreateProfile
         public ActionResult CreateProfile() {
             User viewModel = new User();
             return View(viewModel);
@@ -44,7 +45,7 @@ namespace SimpleFitness.UI.Controllers {
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateProfile(User model) {
             if (ModelState.IsValid) {
-                var user = await GetUser();
+                User user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
 
                 user.Age = model.Age;
                 user.Gender = model.Gender;
@@ -66,7 +67,7 @@ namespace SimpleFitness.UI.Controllers {
 
         //GET : /Profile/
         public async Task<ActionResult> Index() {
-            User user = await GetUser();
+            User user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
             return View(user);
         }
 
@@ -74,7 +75,7 @@ namespace SimpleFitness.UI.Controllers {
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Index(User model) {
             if (ModelState.IsValid) {
-                User user = await GetUser();
+                User user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
 
                 user.Age = model.Age;
                 user.Gender = model.Gender;
@@ -95,26 +96,61 @@ namespace SimpleFitness.UI.Controllers {
             return View(model);
         }
 
+        //Testing meal plan
+        private MealPlan GetMealPlan() {
+            MealPlan mealPlan = new MealPlan();
+            mealPlan.CalorieLimit = 2000;
+
+
+            Food f1 = new Food();
+            f1.FoodDescription = "Chicken";
+            f1.Protein = 10;
+            f1.Fat = 5;
+            f1.Carbs = 0;
+            f1.UpdateCalories();
+            Food f2 = new Food();
+            f2.FoodDescription = "Broccoli";
+            f2.Protein = 1;
+            f2.Fat = 0;
+            f2.Carbs = 12;
+            f2.UpdateCalories();
+            Food f3 = new Food();
+            f3.FoodDescription = "Rice";
+            f3.Protein = 0;
+            f3.Fat = 1;
+            f3.Carbs = 23;
+            f3.UpdateCalories();
+
+            Meal m1 = new Meal();
+            m1.DayOfWeek = "Monday";
+            m1.MealType = "Dinner";
+            m1.Foods.Add(f1);
+            m1.Foods.Add(f2);
+            m1.Foods.Add(f3);
+            m1.UpdateNutritionTotals();
+
+            mealPlan.Meals.Add(m1);
+
+
+
+            return mealPlan;
+        }
+
 
         public async Task<ActionResult> MacroTracker() {
-            User user = await GetUser();
-            DBContext dBContext = new DBContext();
-            DBAccess<DailyMacroTracker> access = new DBAccess<DailyMacroTracker>(dBContext);  
+            string id = User.Identity.GetUserId();
 
-            List<DailyMacroTracker> trackers = access.Collection().ToList();
+            User user = await _userManager.Users
+                .Include(u => u.MacroTrackers)
+                .SingleOrDefaultAsync(u => u.Id == id);
 
             DateTime currentDate = DateTime.Now.Date;
-            DailyMacroTracker tracker = trackers.FirstOrDefault(t => currentDate == t.Day);
+            DailyMacroTracker tracker = user.MacroTrackers.FirstOrDefault(t => currentDate == t.Day);
 
             if (tracker == null) {
-
-                //For some reason i needed to make an empty list to where i then insert it into the database.
-                //Not sure why its that way, but it works.
                 DailyMacroTracker newTracker = new DailyMacroTracker();
 
-                List<DailyMacroTracker> newTrackers = new List<DailyMacroTracker> { newTracker };
-
-                user.MacroTrackers = newTrackers;
+                user.MacroTrackers.Add(newTracker);
 
                 var result = await _userManager.UpdateAsync(user);
 
@@ -128,36 +164,47 @@ namespace SimpleFitness.UI.Controllers {
             return View(tracker);
         }
 
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> MacroTracker(DailyMacroTracker tracker) {
             if (ModelState.IsValid) {
-                User user = await GetUser();
-                DBContext dBContext = new DBContext();
-                DBAccess<DailyMacroTracker> access = new DBAccess<DailyMacroTracker>(dBContext);
+                string id = User.Identity.GetUserId();
 
-                List<DailyMacroTracker> trackers = access.Collection().ToList();
+                User user = await _userManager.Users
+                    .Include(u => u.MacroTrackers)
+                    .SingleOrDefaultAsync(u => u.Id == id);
 
                 DateTime currentDate = DateTime.Now.Date;
-                DailyMacroTracker currentTracker = trackers.FirstOrDefault(t => currentDate == t.Day);
+                DailyMacroTracker currentTracker = user.MacroTrackers.FirstOrDefault(t => currentDate == t.Day);
 
                 currentTracker.Carbs += tracker.Carbs;
                 currentTracker.Protein += tracker.Protein;
                 currentTracker.Fat += tracker.Fat;
                 currentTracker.UpdateCalories();
 
-                access.Update(currentTracker);
-                access.Commit();
+                var result = await _userManager.UpdateAsync(user);
 
-                return RedirectToAction("MacroTracker", "Profile");
+                if (result.Succeeded) {
+                    return RedirectToAction("MacroTracker", "Profile");
+                }
+
+                AddErrors(result);
             }
 
             return View(tracker);
         }
 
 
+        public async Task<ActionResult> MealPlan() {
+            string id = User.Identity.GetUserId().ToString();
+
+            User user = await _userManager.Users
+                .Include(u => u.MealPlan.Meals)
+                .Include(u => u.MealPlan.Meals.Select(m => m.Foods))
+                .SingleOrDefaultAsync(u => u.Id.ToString() == id);
+
+            return View(user.MealPlan);
+        }
 
 
         //Helper functions
@@ -165,11 +212,6 @@ namespace SimpleFitness.UI.Controllers {
             foreach (var error in result.Errors) {
                 ModelState.AddModelError("", error);
             }
-        }
-
-        private async Task<User> GetUser() {
-            User user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
-            return user;
         }
     }
 }

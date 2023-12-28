@@ -1,0 +1,55 @@
+﻿@model SimpleFitness.Backend.Food.Models.MealPlan
+
+@{
+    ViewBag.Title = "Meal Plan";
+}
+
+<h2>Your Meal Plan</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CalorieLimit)
+            @Html.DisplayFor(model => model.CalorieLimit)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model.Meals) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.DayOfWeek)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.MealType)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TotalProtein)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TotalFat)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TotalCarbs)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TotalCalories)
+        </td>
+        <td>
+            <ul>
+                @foreach (var f in item.Foods) {
+                    <li>@Html.DisplayFor(food => f.FoodDescription)</li>
+                    <li>@Html.DisplayFor(food => f.Protein)</li>
+                    <li>@Html.DisplayFor(food => f.Fat)</li>
+                    <li>@Html.DisplayFor(food => f.Carbs)</li>
+                    <li>@Html.DisplayFor(food => f.Calories)</li>
+                }
+            </ul>
+        </td>
+    </tr>
+}
+
+</table>
