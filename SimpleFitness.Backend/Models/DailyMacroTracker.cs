@@ -11,9 +11,8 @@ namespace SimpleFitness.Backend.Models {
         public int Protein { get; set; }
         public int Fat { get; set; }
         public int Carbs { get; set; }
+        [DisplayName("Total Calories")]
         public int TotalCalories { get; set; }
-
-        //public string User_Id { get; set; }
 
         public DailyMacroTracker() { 
             this.Day = DateTime.Now.Date;

@@ -132,9 +132,26 @@ namespace SimpleFitness.UI.Controllers {
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult MacroTracker(DailyMacroTracker tracker) {
+        public async Task<ActionResult> MacroTracker(DailyMacroTracker tracker) {
             if (ModelState.IsValid) {
+                User user = await GetUser();
+                DBContext dBContext = new DBContext();
+                DBAccess<DailyMacroTracker> access = new DBAccess<DailyMacroTracker>(dBContext);
 
+                List<DailyMacroTracker> trackers = access.Collection().ToList();
+
+                DateTime currentDate = DateTime.Now.Date;
+                DailyMacroTracker currentTracker = trackers.FirstOrDefault(t => currentDate == t.Day);
+
+                currentTracker.Carbs += tracker.Carbs;
+                currentTracker.Protein += tracker.Protein;
+                currentTracker.Fat += tracker.Fat;
+                currentTracker.UpdateCalories();
+
+                access.Update(currentTracker);
+                access.Commit();
+
+                return RedirectToAction("MacroTracker", "Profile");
             }
 
             return View(tracker);
