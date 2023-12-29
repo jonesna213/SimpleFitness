@@ -20,11 +20,6 @@ namespace SimpleFitness.Backend.Database {
             return dbSet;
         }
 
-        public T Collection(string id) {
-            T item = dbSet.FirstOrDefault(i => i.Id == id);
-            return item;
-        }
-
         public void Commit() {
             context.SaveChanges();
         }

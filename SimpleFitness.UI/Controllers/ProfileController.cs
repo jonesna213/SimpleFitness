@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity.Owin;
 using SimpleFitness.Backend.Database;
 using SimpleFitness.Backend.Food.Models;
 using SimpleFitness.Backend.Models;
+using SimpleFitness.Backend.Workout.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -96,7 +97,7 @@ namespace SimpleFitness.UI.Controllers {
             return View(model);
         }
 
-        //Testing meal plan
+        //Test meal plan
         private MealPlan GetMealPlan() {
             MealPlan mealPlan = new MealPlan();
             mealPlan.CalorieLimit = 2000;
@@ -131,9 +132,36 @@ namespace SimpleFitness.UI.Controllers {
 
             mealPlan.Meals.Add(m1);
 
-
-
             return mealPlan;
+        }
+
+        //Test Workout Plan
+        private WorkoutPlan GetWorkoutPlan() {
+            WorkoutPlan workoutPlan = new WorkoutPlan();
+
+            Exercise e1 = new Exercise();
+            e1.Name = "Bench Press";
+            e1.Sets = 3;
+            e1.Reps = "10-12";
+            Exercise e2 = new Exercise();
+            e2.Name = "Incline Dumbbell Press";
+            e2.Sets = 4;
+            e2.Reps = "10-12";
+            Exercise e3 = new Exercise();
+            e3.Name = "Cable Fly";
+            e3.Sets = 4;
+            e3.Reps = "15";
+
+            Workout w1 = new Workout();
+            w1.DayOfWeek = "Tuesday";
+            w1.Exercises.Add(e1);
+            w1.Exercises.Add(e2);
+            w1.Exercises.Add(e3);
+
+            workoutPlan.Workouts.Add(w1);
+
+
+            return workoutPlan;
         }
 
 
@@ -204,6 +232,18 @@ namespace SimpleFitness.UI.Controllers {
                 .SingleOrDefaultAsync(u => u.Id.ToString() == id);
 
             return View(user.MealPlan);
+        }
+
+
+        public async Task<ActionResult> WorkoutPlan() {
+            string id = User.Identity.GetUserId().ToString();
+
+            User user = await _userManager.Users
+                .Include(u => u.WorkoutPlan.Workouts)
+                .Include(u => u.WorkoutPlan.Workouts.Select(m => m.Exercises))
+                .SingleOrDefaultAsync(u => u.Id.ToString() == id);
+
+            return View(user.WorkoutPlan);
         }
 
 

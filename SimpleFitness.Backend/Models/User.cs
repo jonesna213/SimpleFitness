@@ -15,7 +15,7 @@ namespace SimpleFitness.Backend.Models {
         //Custom properties
         public virtual WorkoutPlan WorkoutPlan { get; set; }
         public virtual MealPlan MealPlan { get; set; }
-        public ICollection<DailyMacroTracker> MacroTrackers { get; set; }
+        public virtual ICollection<DailyMacroTracker> MacroTrackers { get; set; }
         public int Age { get; set; }
         public string Gender { get; set; }
         public string Height { get; set; } //In feet/in

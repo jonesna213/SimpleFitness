@@ -1,0 +1,32 @@
+﻿@model SimpleFitness.Backend.Workout.Models.WorkoutPlan
+
+@{
+    ViewBag.Title = "WorkoutPlan";
+}
+
+<h2>Your Workout Plan</h2>
+
+<table class="table">
+
+    @foreach (var item in Model.Workouts) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DayOfWeek)
+            </td>
+            <td>
+                <ul  class="list-unstyled">
+                    @foreach (var e in item.Exercises) {
+                        <li>@Html.DisplayFor(i => e.Name)</li>
+                        <li>@Html.DisplayFor(i => e.Description)</li>
+                        <li>@Html.DisplayFor(i => e.Sets)</li>
+                        <li>@Html.DisplayFor(i => e.Reps)</li>
+                        <li>@Html.DisplayFor(i => e.AmountOfTime)</li>
+
+                        <hr />
+                    }
+                </ul>
+            </td>
+        </tr>
+    }
+
+</table>
