@@ -80,7 +80,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\DBContext.cs" />
-    <Compile Include="Database\DBAccess.cs" />
     <Compile Include="Migrations\202312200110059_Initial.cs" />
     <Compile Include="Migrations\202312200110059_Initial.designer.cs">
       <DependentUpon>202312200110059_Initial.cs</DependentUpon>

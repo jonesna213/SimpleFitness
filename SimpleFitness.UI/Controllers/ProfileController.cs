@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
-using SimpleFitness.Backend.Database;
 using SimpleFitness.Backend.Food.Models;
 using SimpleFitness.Backend.Models;
 using SimpleFitness.Backend.Workout.Models;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -234,6 +231,42 @@ namespace SimpleFitness.UI.Controllers {
             return View(user.MealPlan);
         }
 
+        public async Task<ActionResult> GetNewMealPlan() {
+            /*
+             *  Max calories 
+             *  Goal
+             *  Dietary restrictions
+             *  Other notes (doesn't like spinach, etc. Or wants to include pizza)
+             *  
+             *  
+             *  Include amounts in food description (1 apple, or 1cup of rice, etc)
+            */
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> GetNewMealPlan(Object model) {
+            if (ModelState.IsValid) {
+                User user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+
+                //Call API function and get result
+                //Add meal plan to user
+
+
+                var result = await _userManager.UpdateAsync(user);
+
+                if (result.Succeeded) {
+                    return RedirectToAction("MealPlan", "Profile");
+                }
+
+                AddErrors(result);
+            }
+
+            return View(model);
+        }
+
 
         public async Task<ActionResult> WorkoutPlan() {
             string id = User.Identity.GetUserId().ToString();
@@ -244,6 +277,39 @@ namespace SimpleFitness.UI.Controllers {
                 .SingleOrDefaultAsync(u => u.Id.ToString() == id);
 
             return View(user.WorkoutPlan);
+        }
+
+        public async Task<ActionResult> GetNewWorkoutPlan() {
+            /*
+             * Goal
+             * Frequency of workouts per week
+             * Disabilities? (Broken leg, bad knee, replaced hip etc)
+             * 
+             * 
+            */
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> GetNewWorkoutPlan(Object model) {
+            if (ModelState.IsValid) {
+                User user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+
+                //Call API function and get result
+                //Add workout plan to user
+
+
+                var result = await _userManager.UpdateAsync(user);
+
+                if (result.Succeeded) {
+                    return RedirectToAction("WorkoutPlan", "Profile");
+                }
+
+                AddErrors(result);
+            }
+
+            return View(model);
         }
 
 
